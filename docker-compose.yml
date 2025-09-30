@@ -1,0 +1,35 @@
+
+version : "3.8"
+
+services:
+  cassandra:
+    image: cassandra:latest
+    container_name: cass_cluster
+    ports: 
+      - "9042:9042"
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+    environment:
+      - CASSANDRA_CLUSTER_NAME=dev_cluster
+    networks:
+      - cassandra
+
+  jupyter:
+    image: jupyter/pyspark-notebook:latest
+    container_name: jupyter-spark
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/home/jovyan/work
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+    depends_on:
+      - cassandra
+    networks:
+      - cassandra
+
+volumes:
+    cassandra_data:
+
+networks:
+    cassandra:
